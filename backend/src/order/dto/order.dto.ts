@@ -1,4 +1,5 @@
 export class TicketDto {
+  id?: string;
   film: string;
   session: string;
   daytime: string;

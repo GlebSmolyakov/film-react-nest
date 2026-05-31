@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as path from 'node:path';
-
-import { configProvider } from './app.config.provider';
+import { ConfigModule } from '@nestjs/config';
+import { AppConfig } from './app.config.provider';
 import { FilmsModule } from './films/films.module';
 import { OrderModule } from './order/order.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import * as path from 'node:path';
+import { AppConfigModule } from './app.config.module';
 
 @Module({
   imports: [
@@ -14,6 +14,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       isGlobal: true,
       cache: true,
     }),
+    AppConfigModule,
     FilmsModule,
     OrderModule,
     ServeStaticModule.forRoot({
@@ -21,13 +22,12 @@ import { MongooseModule } from '@nestjs/mongoose';
       serveRoot: '/content/afisha',
     }),
     MongooseModule.forRootAsync({
-      useFactory: (config: ConfigService) => ({
-        uri: config.get<string>('DATABASE_URL'),
+      imports: [AppConfigModule],
+      useFactory: (config: AppConfig) => ({
+        uri: config.database.url,
       }),
-      inject: [ConfigService],
+      inject: ['CONFIG'],
     }),
   ],
-  controllers: [],
-  providers: [configProvider],
 })
 export class AppModule {}

@@ -15,4 +15,8 @@ export class FilmsRepository {
   async findById(id: string): Promise<Film> {
     return this.filmModel.findOne({ id: id }).exec();
   }
+
+  async updateFilm(id: string, film: Film): Promise<void> {
+    await this.filmModel.updateOne({ id }, film).exec();
+  }
 }
